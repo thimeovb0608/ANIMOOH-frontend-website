@@ -577,18 +577,24 @@ footer .footer-copy {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 820px) {
-  .nav-brand { padding: 0 20px; }
-  .nav-brand ul { gap: 14px; }
-  .nav-brand ul li a { font-size: 12px; }
-  .nav-brand ul li a.nav-cta { padding: 7px 14px; }
+  .nav-brand { padding: 0 16px; }
+  .nav-brand .nav-optional { display: none; }
+  .nav-brand ul { gap: 16px; }
+  .nav-brand ul li a { font-size: 13px; white-space: nowrap; }
+  .nav-brand ul li a.nav-cta { padding: 7px 16px; }
   .nav-brand-logo img { height: 26px; }
   section { padding: 60px 20px; }
   .trust-bar { gap: 24px; padding: 16px 20px; }
   .about-grid { grid-template-columns: 1fr; }
   footer { padding: 40px 20px 24px; }
+  .hero-banner img {
+    height: 340px;
+    object-fit: cover;
+    object-position: center 35%;
+  }
   .hero-cta {
     position: static;
     justify-content: center;
-    padding: 24px 20px 4px;
+    padding: 20px 20px 4px;
   }
 }
