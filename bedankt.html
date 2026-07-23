@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bedankt — ANIMOOH!</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .thanks-wrap {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      background: linear-gradient(135deg, #fff8e1 0%, #fff0f3 50%, #e8f0fb 100%);
+    }
+    .thanks-wrap .emoji { font-size: 64px; margin-bottom: 16px; }
+    .thanks-wrap h1 {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: clamp(32px, 5vw, 52px);
+      color: var(--orange);
+      margin-bottom: 14px;
+    }
+    .thanks-wrap p {
+      font-size: 17px;
+      color: #555;
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav-brand">
+    <a href="index.html" class="nav-brand-logo">
+      <img src="Assets/Logo/Animooh Logo transparant.png" alt="ANIMOOH!" />
+    </a>
+    <ul>
+      <li><a href="products.html">Producten</a></li>
+      <li><a href="no-pee-here.html">No Pee Here</a></li>
+      <li><a href="good-smell.html">Good Smell</a></li>
+      <li><a href="about.html">Over ons</a></li>
+    </ul>
+  </nav>
+
+  <div class="thanks-wrap">
+    <div class="emoji" id="t-emoji">🐾</div>
+    <h1 id="t-title">Even kijken…</h1>
+    <p id="t-text">We controleren de status van je betaling.</p>
+    <a href="products.html" class="btn-primary">Verder winkelen</a>
+  </div>
+
+  <script>
+    const pid = new URLSearchParams(location.search).get("pid");
+    const show = (emoji, title, text) => {
+      document.getElementById("t-emoji").textContent = emoji;
+      document.getElementById("t-title").textContent = title;
+      document.getElementById("t-text").textContent = text;
+    };
+
+    if (!pid) {
+      show("🐾", "Bedankt voor je bestelling!", "Als je betaling gelukt is, gaan we meteen voor je aan de slag.");
+    } else {
+      fetch("/api/status?pid=" + encodeURIComponent(pid))
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === "paid") {
+            show("🎉", "Betaling gelukt — bedankt!", "Je bestelling is binnen. We maken ze zo snel mogelijk klaar voor verzending. Woef & miauw van het hele team!");
+          } else if (d.status === "open" || d.status === "pending") {
+            show("⏳", "Betaling wordt verwerkt", "Je betaling is nog bezig. Je hoeft niets te doen — dit kan heel even duren.");
+          } else {
+            show("😿", "Betaling niet gelukt", "De betaling werd geannuleerd of is mislukt. Geen zorgen — je kan het gewoon opnieuw proberen.");
+          }
+        })
+        .catch(() => show("🐾", "Bedankt!", "Als je betaling gelukt is, gaan we meteen voor je aan de slag."));
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Afrekenen — ANIMOOH!</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .checkout-wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .order-summary {
+      background: linear-gradient(135deg, #fff8c5, #ffe0d6);
+      border-radius: 24px;
+      padding: 32px;
+      text-align: center;
+      position: sticky;
+      top: 96px;
+    }
+    .order-summary img {
+      height: 180px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.12));
+      margin-bottom: 16px;
+    }
+    .order-summary h2 {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .order-summary .price {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: var(--orange);
+      margin: 12px 0 4px;
+    }
+    .order-summary .shipping-note {
+      font-size: 13px;
+      color: #666;
+    }
+    .qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .qty-row button {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--orange);
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .qty-row span {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      min-width: 24px;
+    }
+    .checkout-form h1 {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: 32px;
+      margin-bottom: 24px;
+    }
+    .checkout-form label {
+      display: block;
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      margin: 16px 0 6px;
+    }
+    .checkout-form input, .checkout-form select {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid #e5e5e5;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .checkout-form input:focus, .checkout-form select:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
+    .pay-btn {
+      width: 100%;
+      margin-top: 28px;
+      background: var(--orange);
+      color: white;
+      border: none;
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+      font-size: 17px;
+      padding: 17px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(231,64,16,0.3);
+    }
+    .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(231,64,16,0.4); }
+    .pay-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+    .checkout-error {
+      display: none;
+      margin-top: 16px;
+      background: #fdecea;
+      color: #b3261e;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .secure-note {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+    }
+    @media (max-width: 820px) {
+      .checkout-wrap { grid-template-columns: 1fr; padding-top: 96px; }
+      .order-summary { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav-brand">
+    <a href="index.html" class="nav-brand-logo">
+      <img src="Assets/Logo/Animooh Logo transparant.png" alt="ANIMOOH!" />
+    </a>
+    <ul>
+      <li><a href="products.html">Producten</a></li>
+      <li><a href="no-pee-here.html">No Pee Here</a></li>
+      <li><a href="good-smell.html">Good Smell</a></li>
+      <li><a href="about.html">Over ons</a></li>
+    </ul>
+  </nav>
+
+  <div class="checkout-wrap">
+    <div class="order-summary">
+      <img id="p-image" src="" alt="" />
+      <h2 id="p-name">…</h2>
+      <div class="price" id="p-total">…</div>
+      <div class="shipping-note" id="p-shipping"></div>
+      <div class="qty-row">
+        <button type="button" id="qty-min">−</button>
+        <span id="qty">1</span>
+        <button type="button" id="qty-plus">+</button>
+      </div>
+    </div>
+
+    <form class="checkout-form" id="form">
+      <h1>Afrekenen</h1>
+
+      <label for="name">Naam</label>
+      <input id="name" name="name" required autocomplete="name" />
+
+      <label for="email">E-mailadres</label>
+      <input id="email" name="email" type="email" required autocomplete="email" />
+
+      <label for="street">Straat + huisnummer</label>
+      <input id="street" name="street" required autocomplete="street-address" />
+
+      <div class="form-row">
+        <div>
+          <label for="zip">Postcode</label>
+          <input id="zip" name="zip" required autocomplete="postal-code" />
+        </div>
+        <div>
+          <label for="city">Gemeente</label>
+          <input id="city" name="city" required autocomplete="address-level2" />
+        </div>
+      </div>
+
+      <label for="country">Land</label>
+      <select id="country" name="country">
+        <option value="BE" selected>België</option>
+        <option value="NL">Nederland</option>
+      </select>
+
+      <button class="pay-btn" type="submit" id="pay">Betalen</button>
+      <div class="checkout-error" id="error"></div>
+      <p class="secure-note">🔒 Veilig betalen via Mollie — Bancontact, iDEAL, kaart en meer.</p>
+    </form>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const productId = params.get("product");
+    let product = null;
+    let shippingEUR = "0.00";
+    let qty = 1;
+
+    const fmt = v => "€ " + Number(v).toFixed(2).replace(".", ",");
+
+    function renderTotal() {
+      if (!product || product.priceEUR === null) return;
+      const total = Number(product.priceEUR) * qty + Number(shippingEUR);
+      document.getElementById("p-total").textContent = fmt(total);
+      document.getElementById("p-shipping").textContent =
+        Number(shippingEUR) > 0 ? "waarvan " + fmt(shippingEUR) + " verzending" : "gratis verzending";
+      document.getElementById("qty").textContent = qty;
+    }
+
+    fetch("/api/products")
+      .then(r => r.json())
+      .then(data => {
+        product = data.products[productId];
+        shippingEUR = data.shippingEUR;
+        if (!product) throw new Error("Product niet gevonden.");
+        document.getElementById("p-image").src = product.image;
+        document.getElementById("p-image").alt = product.name;
+        document.getElementById("p-name").textContent = product.name;
+        if (!product.buyable) {
+          document.getElementById("p-total").textContent = "Binnenkort beschikbaar";
+          document.getElementById("pay").disabled = true;
+        } else {
+          renderTotal();
+        }
+      })
+      .catch(() => {
+        document.getElementById("p-name").textContent = "Product niet gevonden";
+        document.getElementById("pay").disabled = true;
+      });
+
+    document.getElementById("qty-min").onclick = () => { if (qty > 1) { qty--; renderTotal(); } };
+    document.getElementById("qty-plus").onclick = () => { if (qty < 10) { qty++; renderTotal(); } };
+
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("pay");
+      const errBox = document.getElementById("error");
+      btn.disabled = true;
+      btn.textContent = "Even geduld…";
+      errBox.style.display = "none";
+      try {
+        const resp = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productId,
+            quantity: qty,
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            street: document.getElementById("street").value,
+            zip: document.getElementById("zip").value,
+            city: document.getElementById("city").value,
+            country: document.getElementById("country").value
+          })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || "Er ging iets mis.");
+        location.href = data.checkoutUrl;
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Betalen";
+      }
+    });
+  </script>
+
+</body>
+</html>

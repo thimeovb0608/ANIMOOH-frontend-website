@@ -1,0 +1,594 @@
+@font-face {
+  font-family: 'BrauerNeue';
+  src: url('Assets/Fonts/BrauerNeueStd-Black.otf') format('opentype');
+  font-weight: 900;
+}
+@font-face {
+  font-family: 'BrauerNeue';
+  src: url('Assets/Fonts/BrauerNeueStd-Bold.otf') format('opentype');
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'BrauerNeue';
+  src: url('Assets/Fonts/BrauerNeueStd-Regular.otf') format('opentype');
+  font-weight: 400;
+}
+
+:root {
+  --orange: #e74010;
+  --yellow: #f6cc00;
+  --blue: #587ABC;
+  --pink: #F5B2BC;
+  --dark: #1a1a1a;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'PTSans', 'PT Sans', Arial, sans-serif;
+  color: var(--dark);
+  background: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── NAV (orange brand bar, used on every page) ── */
+.nav-brand {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.nav-brand-logo img {
+  height: 34px;
+  display: block;
+  object-fit: contain;
+}
+
+.nav-brand ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-brand ul li a {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+.nav-brand ul li a:hover {
+  color: var(--yellow);
+}
+
+.nav-brand ul li a.nav-cta {
+  background: var(--yellow);
+  color: var(--dark);
+  padding: 9px 20px;
+  border-radius: 50px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.nav-brand ul li a.nav-cta:hover {
+  background: #ffdd33;
+  color: var(--dark);
+  transform: scale(1.05);
+}
+
+/* ── HERO (banner image) ── */
+.hero-banner {
+  margin-top: 64px;
+  position: relative;
+}
+
+.hero-banner img {
+  width: 100%;
+  display: block;
+}
+
+.hero-cta {
+  position: absolute;
+  left: 7%;
+  bottom: 8%;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: var(--orange);
+  color: var(--white);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(231,64,16,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(231,64,16,0.4);
+}
+
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: var(--dark);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px 36px;
+  border-radius: 50px;
+  text-decoration: none;
+  border: 2.5px solid var(--dark);
+  transition: transform 0.2s, background 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--dark);
+  color: var(--white);
+  transform: translateY(-3px);
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  background: var(--dark);
+  color: var(--white);
+  padding: 18px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.trust-item img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+.trust-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
+/* ── SECTION SHARED ── */
+section {
+  padding: 80px 40px;
+}
+
+.section-label {
+  display: inline-block;
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 17px;
+  color: #666;
+  max-width: 560px;
+  line-height: 1.6;
+  margin-bottom: 48px;
+}
+
+/* ── PRODUCT LINES ── */
+.product-lines {
+  background: #fafafa;
+  text-align: center;
+}
+
+.product-lines .section-title,
+.product-lines .section-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.line-card {
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-decoration: none;
+  color: var(--dark);
+  display: block;
+  transition: transform 0.25s, box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.line-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.12);
+}
+
+.line-card.nopee {
+  background: linear-gradient(135deg, #fff8c5, #ffe0d6);
+}
+
+.line-card.goodsmell {
+  background: linear-gradient(135deg, #dce8f8, #fce4ea);
+}
+
+.line-card img.product-preview {
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.12));
+  transition: transform 0.25s;
+}
+
+.line-card:hover img.product-preview {
+  transform: scale(1.06);
+}
+
+.line-card h3 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.line-card.nopee h3 { color: var(--orange); }
+.line-card.goodsmell h3 { color: var(--blue); }
+
+.line-card p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.line-link {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.line-card.nopee .line-link { color: var(--orange); }
+.line-card.goodsmell .line-link { color: var(--blue); }
+
+/* ── VALUES ── */
+.values {
+  background: var(--white);
+  text-align: center;
+}
+
+.values .section-title,
+.values .section-sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.value-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.value-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.value-item h4 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.value-item p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ── CTA BANNER ── */
+.cta-banner {
+  background: var(--orange);
+  color: var(--white);
+  text-align: center;
+  padding: 80px 40px;
+}
+
+.cta-banner h2 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 56px);
+  margin-bottom: 12px;
+}
+
+.cta-banner p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 32px;
+}
+
+.btn-white {
+  display: inline-block;
+  background: var(--white);
+  color: var(--orange);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  padding: 16px 40px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.btn-white:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--dark);
+  color: rgba(255,255,255,0.7);
+  padding: 48px 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+footer .footer-logo img {
+  height: 40px;
+  object-fit: contain;
+}
+
+footer nav ul {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+footer nav ul li a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+
+footer nav ul li a:hover {
+  color: var(--white);
+}
+
+footer .footer-copy {
+  font-size: 13px;
+  opacity: 0.5;
+}
+
+/* ── PRODUCTS PAGE ── */
+.page-hero {
+  padding: 140px 40px 60px;
+  text-align: center;
+}
+
+.page-hero.nopee-bg {
+  background: linear-gradient(135deg, #fff8c5, #ffe0d6);
+}
+
+.page-hero.goodsmell-bg {
+  background: linear-gradient(135deg, #dce8f8, #fce4ea);
+}
+
+.page-hero.neutral-bg {
+  background: linear-gradient(135deg, #fff8e1, #fafafa);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.product-card {
+  background: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transition: transform 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+.product-card-img {
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card.nopee .product-card-img { background: linear-gradient(135deg, #fff8c5, #ffe0d6); }
+.product-card.goodsmell .product-card-img { background: linear-gradient(135deg, #dce8f8, #fce4ea); }
+
+.product-card-img img {
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+}
+
+.product-card-body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-tag {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.product-card.nopee .product-tag { color: var(--orange); }
+.product-card.goodsmell .product-tag { color: var(--blue); }
+
+.product-card h3 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.product-card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.55;
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.btn-buy {
+  display: block;
+  text-align: center;
+  background: var(--orange);
+  color: var(--white);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-buy:hover {
+  background: #c73508;
+  transform: scale(1.03);
+}
+
+.product-card.goodsmell .btn-buy {
+  background: var(--blue);
+}
+
+.product-card.goodsmell .btn-buy:hover {
+  background: #3d5f99;
+}
+
+/* ── ABOUT PAGE ── */
+.about-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.about-grid img {
+  width: 100%;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.about-text .section-label { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 820px) {
+  .nav-brand { padding: 0 20px; }
+  .nav-brand ul { gap: 14px; }
+  .nav-brand ul li a { font-size: 12px; }
+  .nav-brand ul li a.nav-cta { padding: 7px 14px; }
+  .nav-brand-logo img { height: 26px; }
+  section { padding: 60px 20px; }
+  .trust-bar { gap: 24px; padding: 16px 20px; }
+  .about-grid { grid-template-columns: 1fr; }
+  footer { padding: 40px 20px 24px; }
+  .hero-cta {
+    position: static;
+    justify-content: center;
+    padding: 24px 20px 4px;
+  }
+}
