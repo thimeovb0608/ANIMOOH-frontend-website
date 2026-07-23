@@ -1,0 +1,5 @@
+# Temporary local preview snapshots (not part of the real server-rendered blog)
+_preview-*.html
+
+# Node dependencies (installed by Vercel, not committed)
+node_modules/

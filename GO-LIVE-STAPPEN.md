@@ -32,7 +32,11 @@ GitHub Pages kan geen betalingen verwerken (alleen statische bestanden). Vercel 
 - Vervang op Vercel `MOLLIE_API_KEY` door je `live_...` sleutel zodra Mollie je account heeft goedgekeurd
 - Doe één echte testbestelling van bv. €0,01? Nee — Mollie heeft een minimum; doe één echte kleine bestelling en betaal ze zelf terug via het dashboard (Refund)
 
-## 6. Adsolut koppelen (fase 2)
+## 6. Blog (voor SEO)
+- Werkt ook pas na de verhuis naar Vercel (stap 3) — net als de checkout
+- Zie `BLOG-HANDLEIDING.md` voor hoe je zelf een nieuw artikel toevoegt
+
+## 7. Adsolut koppelen (fase 2)
 - Activeer API-toegang voor jullie installatie via My Adsolut (my.adsolut.com)
 - Technische documentatie: https://api-portal.adsolut.com/
 - Met die toegangsgegevens bouwen we `lib/adsolut.js` af:

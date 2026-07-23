@@ -2,5 +2,8 @@
   "name": "animooh-website",
   "version": "1.0.0",
   "private": true,
-  "description": "ANIMOOH! brand site with Mollie checkout (serverless functions on Vercel)"
+  "description": "ANIMOOH! brand site with Mollie checkout (serverless functions on Vercel)",
+  "dependencies": {
+    "marked": "^12.0.0"
+  }
 }
