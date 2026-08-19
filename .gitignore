@@ -4,3 +4,6 @@ try-node.js
 
 # Node dependencies (installed by Vercel, not committed)
 node_modules/
+
+# Confidential Adsolut API documentation — local reference only, never pushed
+adsolut-docs/
