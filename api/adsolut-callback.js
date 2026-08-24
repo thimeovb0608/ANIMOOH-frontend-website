@@ -1,12 +1,15 @@
-// TEMPORARY PROBE — the redirect target for api/adsolut-login.js.
-// Exchanges the login code for tokens, lists administrations, activates our
-// integration on the first one, then fetches ONE real CatalogueProducts page
-// and prints everything to the screen as JSON so we can inspect it directly.
+// One-time bootstrap login — the redirect target for api/adsolut-login.js.
+// Exchanges the login code for tokens, SAVES the refresh token into Vercel KV
+// (this is what seeds lib/adsolut-auth.js's read/refresh/save cycle for all
+// future automated calls), then does one live sanity check: lists
+// administrations, activates our integration, and fetches a few real
+// CatalogueProducts to confirm everything actually works end to end.
 //
-// NOT the final integration — see the note in adsolut-login.js. Once we know
-// the real data shape, this whole file gets replaced by lib/adsolut.js plus
-// proper secure storage for the refresh token (it rotates on every use, so it
-// can't just live in a static Vercel env var long-term).
+// You only need to visit this once (or again if the stored refresh token
+// ever dies for some reason — see lib/adsolut-auth.js).
+
+const { kv } = require("@vercel/kv");
+const { REFRESH_TOKEN_KEY } = require("../lib/adsolut-auth");
 
 const TOKEN_URL = "https://login.wolterskluwer.eu/auth/core/connect/token";
 const ADM_URL = "https://api.adsolut.com/adm/v1/administrations";
@@ -59,6 +62,12 @@ module.exports = async (req, res) => {
     const accessToken = tokens.access_token;
     log.gotAccessToken = !!accessToken;
     log.refreshTokenPreview = tokens.refresh_token ? tokens.refresh_token.slice(0, 12) + "..." : null;
+
+    // Step 1b: seed Vercel KV — this is the actual point of this file now.
+    // From here on, lib/adsolut-auth.js keeps this fresh on its own.
+    log.step = "save refresh token to KV";
+    await kv.set(REFRESH_TOKEN_KEY, tokens.refresh_token);
+    log.savedToKv = true;
 
     // Step 2: list administrations
     log.step = "list administrations";

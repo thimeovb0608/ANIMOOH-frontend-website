@@ -4,6 +4,7 @@
   "private": true,
   "description": "ANIMOOH! brand site with Mollie checkout (serverless functions on Vercel)",
   "dependencies": {
-    "marked": "^12.0.0"
+    "marked": "^12.0.0",
+    "@vercel/kv": "^2.0.0"
   }
 }
