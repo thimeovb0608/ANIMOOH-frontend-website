@@ -25,22 +25,29 @@ module.exports = async (req, res) => {
   try {
     const accessToken = await getAccessToken();
 
-    const [countries, catalogues] = await Promise.all([
+    const [countries, catalogues, vatCodes] = await Promise.all([
       fetchAll("Countries", accessToken),
-      fetchAll("Catalogues", accessToken)
+      fetchAll("Catalogues", accessToken),
+      fetchAll("VatCodes", accessToken)
     ]);
 
     // Pull out just BE and NL so they're easy to spot in the response.
     const rows = countries.body?.data || [];
     const pick = (iso) => rows.find((c) => c.isoCode === iso || c.code === iso) || null;
 
+    // The VAT code all 8 ANIMOOH products use — we need its actual percentage.
+    const OUR_VAT_CODE_ID = "0bf3ac8b-35a1-423e-9203-ab37f18cf7b2";
+    const vatRows = vatCodes.body?.data || [];
+    const ourVatCode = vatRows.find((v) => v.id === OUR_VAT_CODE_ID) || null;
+
     res.status(200).json({
+      ourProductVatCode: ourVatCode,
       belgium: pick("BE"),
       netherlands: pick("NL"),
       countriesStatus: countries.status,
       countriesCount: rows.length,
       catalogues: catalogues.body,
-      allCountries: rows
+      allVatCodes: vatRows
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
