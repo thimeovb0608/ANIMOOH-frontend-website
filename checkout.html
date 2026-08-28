@@ -18,56 +18,63 @@
     .order-summary {
       background: linear-gradient(135deg, #fff8c5, #ffe0d6);
       border-radius: 24px;
-      padding: 32px;
-      text-align: center;
+      padding: 28px;
       position: sticky;
       top: 96px;
     }
-    .order-summary img {
-      height: 180px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.12));
-      margin-bottom: 16px;
-    }
-    .order-summary h2 {
+    .order-summary > h2 {
       font-family: 'BrauerNeue', sans-serif;
       font-weight: 900;
-      font-size: 22px;
-      margin-bottom: 6px;
-    }
-    .order-summary .price {
-      font-family: 'BrauerNeue', sans-serif;
-      font-weight: 900;
-      font-size: 28px;
-      color: var(--orange);
-      margin: 12px 0 4px;
-    }
-    .order-summary .shipping-note {
-      font-size: 13px;
-      color: #666;
-    }
-    .qty-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin-top: 16px;
-    }
-    .qty-row button {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: var(--orange);
-      color: white;
       font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
     }
-    .qty-row span {
+    .summary-line {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .summary-line img { width: 52px; height: 52px; object-fit: contain; }
+    .summary-line h3 {
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+    .summary-line .qty { font-size: 12px; color: #7a6a5f; }
+    .summary-line .amount {
       font-family: 'BrauerNeue', sans-serif;
       font-weight: 900;
-      font-size: 20px;
-      min-width: 24px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .summary-total {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-top: 18px;
+      font-family: 'BrauerNeue', sans-serif;
+      font-weight: 900;
+    }
+    .summary-total span { font-size: 15px; }
+    .summary-total strong { font-size: 28px; color: var(--orange); }
+    .shipping-note { font-size: 13px; color: #7a6a5f; margin-top: 2px; }
+    .summary-edit {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--orange);
+      font-weight: 700;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
     }
     .checkout-form h1 {
       font-family: 'BrauerNeue', sans-serif;
@@ -156,15 +163,11 @@
 
   <div class="checkout-wrap">
     <div class="order-summary">
-      <img id="p-image" src="" alt="" />
-      <h2 id="p-name">…</h2>
-      <div class="price" id="p-total">…</div>
-      <div class="shipping-note" id="p-shipping"></div>
-      <div class="qty-row">
-        <button type="button" id="qty-min">−</button>
-        <span id="qty">1</span>
-        <button type="button" id="qty-plus">+</button>
-      </div>
+      <h2>Jouw bestelling</h2>
+      <div id="summary-lines"></div>
+      <div class="summary-total"><span>Totaal</span><strong id="summary-total">…</strong></div>
+      <div class="shipping-note" id="summary-shipping"></div>
+      <button type="button" class="summary-edit" id="summary-edit">Winkelmandje aanpassen</button>
     </div>
 
     <form class="checkout-form" id="form">
@@ -202,52 +205,61 @@
     </form>
   </div>
 
+  <!-- cart.js must load first — the script below reads window.ANIMOOH_CART. -->
+  <script src="nav.js"></script>
+  <script src="cart.js"></script>
+
   <script>
-    const params = new URLSearchParams(location.search);
-    const productId = params.get("product");
-    let product = null;
-    let shippingEUR = "0.00";
-    let qty = 1;
+    // The basket itself lives in cart.js; this page only renders it and hands
+    // it to /api/checkout. Prices shown here come from cart.js's shared maths,
+    // which mirrors what the server actually charges.
+    const cart = window.ANIMOOH_CART;
 
-    const fmt = v => "€ " + Number(v).toFixed(2).replace(".", ",");
+    function renderSummary() {
+      const lines = cart.lines();
+      const box = document.getElementById("summary-lines");
+      const payBtn = document.getElementById("pay");
 
-    function renderTotal() {
-      if (!product || product.priceEUR === null) return;
-      const total = Number(product.priceEUR) * qty + Number(shippingEUR);
-      document.getElementById("p-total").textContent = fmt(total);
-      document.getElementById("p-shipping").textContent =
-        Number(shippingEUR) > 0 ? "waarvan " + fmt(shippingEUR) + " verzending" : "gratis verzending";
-      document.getElementById("qty").textContent = qty;
+      if (lines.length === 0) {
+        box.innerHTML = '<p style="padding:20px 0;color:#7a6a5f;">Je winkelmandje is leeg.<br />' +
+          '<a href="products.html" style="color:var(--orange);font-weight:700;">Bekijk onze producten →</a></p>';
+        document.getElementById("summary-total").textContent = cart.fmt(0);
+        document.getElementById("summary-shipping").textContent = "";
+        payBtn.disabled = true;
+        return;
+      }
+
+      box.innerHTML = lines.map(l =>
+        '<div class="summary-line">' +
+        '<img src="' + l.image + '" alt="" />' +
+        '<div><h3>' + l.name + '</h3><div class="qty">Aantal: ' + l.quantity + '</div></div>' +
+        '<div class="amount">' + cart.fmt(l.total) + '</div>' +
+        '</div>'
+      ).join("");
+
+      const ship = cart.shipping();
+      document.getElementById("summary-total").textContent = cart.fmt(cart.subtotal() + ship);
+      document.getElementById("summary-shipping").textContent =
+        ship > 0 ? "waarvan " + cart.fmt(ship) + " verzending" : "Gratis verzending";
+      payBtn.disabled = false;
     }
 
-    fetch("/api/products")
-      .then(r => r.json())
-      .then(data => {
-        product = data.products[productId];
-        shippingEUR = data.shippingEUR;
-        if (!product) throw new Error("Product niet gevonden.");
-        document.getElementById("p-image").src = product.image;
-        document.getElementById("p-image").alt = product.name;
-        document.getElementById("p-name").textContent = product.name;
-        if (!product.buyable) {
-          document.getElementById("p-total").textContent = "Binnenkort beschikbaar";
-          document.getElementById("pay").disabled = true;
-        } else {
-          renderTotal();
-        }
-      })
-      .catch(() => {
-        document.getElementById("p-name").textContent = "Product niet gevonden";
-        document.getElementById("pay").disabled = true;
-      });
-
-    document.getElementById("qty-min").onclick = () => { if (qty > 1) { qty--; renderTotal(); } };
-    document.getElementById("qty-plus").onclick = () => { if (qty < 10) { qty++; renderTotal(); } };
+    cart.ready(renderSummary);
+    document.addEventListener("animooh-cart-changed", renderSummary);
+    document.getElementById("summary-edit").addEventListener("click", cart.open);
 
     document.getElementById("form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = document.getElementById("pay");
       const errBox = document.getElementById("error");
+      const basket = cart.read();
+
+      if (Object.keys(basket).length === 0) {
+        errBox.textContent = "Je winkelmandje is leeg.";
+        errBox.style.display = "block";
+        return;
+      }
+
       btn.disabled = true;
       btn.textContent = "Even geduld…";
       errBox.style.display = "none";
@@ -256,8 +268,7 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            productId,
-            quantity: qty,
+            items: Object.keys(basket).map(id => ({ productId: id, quantity: basket[id] })),
             name: document.getElementById("name").value,
             email: document.getElementById("email").value,
             street: document.getElementById("street").value,
@@ -277,7 +288,5 @@
       }
     });
   </script>
-
-  <script src="nav.js"></script>
 </body>
 </html>

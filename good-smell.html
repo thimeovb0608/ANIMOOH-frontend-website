@@ -22,7 +22,7 @@
     .product-detail-text .section-label { display: block; color: var(--blue); }
     .product-detail-text h2 { font-family: 'BrauerNeue', sans-serif; font-weight: 900; font-size: 36px; color: var(--blue); margin-bottom: 16px; }
     .product-detail-text p { font-size: 16px; color: #555; line-height: 1.7; margin-bottom: 24px; }
-    .btn-blue { display: inline-block; background: var(--blue); color: var(--white); font-family: 'BrauerNeue', sans-serif; font-weight: 700; font-size: 16px; padding: 16px 36px; border-radius: 50px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(88,122,188,0.3); }
+    .btn-blue { display: inline-block; background: var(--blue); color: var(--white); font-family: 'BrauerNeue', sans-serif; font-weight: 700; font-size: 16px; padding: 16px 36px; border: none; border-radius: 50px; text-decoration: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(88,122,188,0.3); }
     .btn-blue:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(88,122,188,0.4); }
     .divider { border: none; border-top: 2px solid #f0f0f0; margin: 0; }
     .sub-label { font-family: 'BrauerNeue', sans-serif; font-weight: 900; font-size: 22px; color: var(--blue); margin: 0 auto 40px; text-align: center; padding: 0 40px; }
@@ -80,7 +80,7 @@
         <li>Zachte bloemengeur</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=buddy-flower" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="buddy-flower">In winkelmandje</button>
     </div>
   </div>
 
@@ -100,7 +100,7 @@
         <li>Zacht voor de vacht</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=buddy-lavendel" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="buddy-lavendel">In winkelmandje</button>
     </div>
   </div>
 
@@ -123,7 +123,7 @@
         <li>Veilig rond dieren &amp; kinderen</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=air-euca" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="air-euca">In winkelmandje</button>
     </div>
   </div>
 
@@ -143,7 +143,7 @@
         <li>Veilig voor alle huisdieren</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=air-agrum" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="air-agrum">In winkelmandje</button>
     </div>
   </div>
 
@@ -166,7 +166,7 @@
         <li>Eucalyptusgeur</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=stuff-euca" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="stuff-euca">In winkelmandje</button>
     </div>
   </div>
 
@@ -186,7 +186,7 @@
         <li>Geen schadelijke chemicaliën</li>
         <li>100% organisch &amp; vegan</li>
       </ul>
-      <a href="checkout.html?product=floorings" class="btn-blue">Koop nu →</a>
+      <button type="button" class="btn-blue" data-add-to-cart="floorings">In winkelmandje</button>
     </div>
   </div>
 
@@ -216,5 +216,6 @@
   </footer>
 
   <script src="nav.js"></script>
+  <script src="cart.js"></script>
 </body>
 </html>

@@ -62,7 +62,18 @@ body {
   display: flex;
   align-items: center;
   gap: 32px;
+  /* Pushes the links (and the cart button after them) to the right, so the
+     logo sits alone on the left. On mobile the list is absolutely positioned,
+     so .nav-cart takes over the pushing there. */
+  margin-left: auto;
 }
+
+/* Explicit order so the cart button always lands between the links and the
+   hamburger, regardless of where cart.js inserts it in the DOM. */
+.nav-brand-logo { order: 1; }
+.nav-brand ul { order: 2; }
+.nav-cart { order: 3; }
+.nav-toggle { order: 4; }
 
 .nav-brand ul li a {
   font-family: 'BrauerNeue', sans-serif;
@@ -120,6 +131,243 @@ body {
 .nav-brand.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
 .nav-brand.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
+/* ── CART BUTTON (injected into the nav by cart.js) ── */
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-left: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-cart svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s;
+}
+
+.nav-cart:hover svg { stroke: var(--yellow); }
+
+.nav-cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--yellow);
+  color: var(--dark);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* ── CART DRAWER (injected into the page by cart.js) ── */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.28s, visibility 0.28s;
+}
+
+.cart-overlay.is-open { opacity: 1; visibility: visible; }
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  max-width: 100%;
+  height: 100%;
+  background: var(--white);
+  box-shadow: -8px 0 32px rgba(0,0,0,0.18);
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+}
+
+.cart-drawer.is-open { transform: translateX(0); }
+
+.cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  background: var(--orange);
+  color: var(--white);
+}
+
+.cart-head h2 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.cart-close {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.cart-lines {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 24px;
+}
+
+.cart-empty {
+  padding: 48px 0;
+  text-align: center;
+  color: #777;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.cart-empty a { color: var(--orange); font-weight: 700; text-decoration: none; }
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-line img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.cart-line-body h3 {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.cart-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-qty button {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cart-qty span {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.cart-qty .cart-remove {
+  width: auto;
+  height: auto;
+  margin-left: 6px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  color: #999;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.cart-qty .cart-remove:hover { color: var(--orange); }
+
+.cart-line-price {
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.cart-foot {
+  padding: 20px 24px 24px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.cart-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+}
+
+.cart-total span { font-size: 15px; }
+.cart-total strong { font-size: 26px; color: var(--orange); }
+
+.cart-shipping {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #777;
+}
+
+.cart-checkout {
+  display: block;
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 50px;
+  background: var(--orange);
+  color: var(--white);
+  font-family: 'BrauerNeue', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(231,64,16,0.3);
+}
+
+.cart-checkout:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(231,64,16,0.4); }
+
+.cart-checkout.is-disabled {
+  background: #ccc;
+  box-shadow: none;
+  pointer-events: none;
+}
+
 /* ── HERO (banner image) ── */
 .hero-banner {
   margin-top: 64px;
@@ -148,8 +396,10 @@ body {
   font-weight: 700;
   font-size: 16px;
   padding: 16px 36px;
+  border: none;
   border-radius: 50px;
   text-decoration: none;
+  cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 16px rgba(231,64,16,0.3);
 }
@@ -655,6 +905,7 @@ footer .footer-copy {
 
 .btn-buy {
   display: block;
+  width: 100%;
   text-align: center;
   background: var(--orange);
   color: var(--white);
@@ -662,8 +913,10 @@ footer .footer-copy {
   font-weight: 700;
   font-size: 14px;
   padding: 12px 24px;
+  border: none;
   border-radius: 50px;
   text-decoration: none;
+  cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
 
@@ -708,6 +961,10 @@ footer .footer-copy {
 
   /* Show the hamburger, hide the inline links */
   .nav-toggle { display: flex; }
+
+  /* The link list drops out of the flex flow below, so the cart button takes
+     over pushing itself and the hamburger to the right edge. */
+  .nav-cart { margin-left: auto; margin-right: 4px; }
 
   /* The link list becomes a dropdown panel under the orange bar */
   .nav-brand ul {
