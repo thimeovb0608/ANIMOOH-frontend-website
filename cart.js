@@ -92,26 +92,37 @@
   // that's how Adsolut recalculates it (validation step 7), and lib/pricing.js
   // does the same on the server. Summing the per-line incl-VAT amounts instead
   // can land a cent higher on mixed baskets.
-  function subtotal() {
-    var exclSum = round2(
-      lines().reduce(function (sum, l) { return sum + l.totalExclVat; }, 0)
-    );
-    return round2(exclSum * (1 + VAT_RATE));
-  }
+  // Mirrors orderTotals() in lib/pricing.js exactly — including the part that
+  // matters most: when shipping is charged it counts as an extra ORDER LINE,
+  // so VAT is rounded once across products + shipping together. Adding an
+  // already-rounded € 7,99 on top instead lands a cent off on most baskets.
+  function totals() {
+    var rows = lines();
 
-  // Mirrors shippingFor() in lib/pricing.js: free from the threshold up.
-  function shipping() {
+    var productsExclVat = round2(
+      rows.reduce(function (sum, l) { return sum + l.totalExclVat; }, 0)
+    );
+    var productsInclVat = round2(productsExclVat * (1 + VAT_RATE));
+
+    // Free-shipping threshold is measured on the products alone.
     var rate = round2(Number(shippingEUR || 0));
     var threshold = Number(freeShippingFromEUR);
-    if (!threshold || isNaN(threshold)) return rate;
-    return subtotal() >= threshold ? 0 : rate;
-  }
+    var hasThreshold = threshold && !isNaN(threshold);
+    var shipping = hasThreshold && productsInclVat >= threshold ? 0 : rate;
 
-  // How much more to spend before shipping is free; 0 once it already is.
-  function amountToFreeShipping() {
-    var threshold = Number(freeShippingFromEUR);
-    if (!threshold || isNaN(threshold) || shipping() === 0) return 0;
-    return round2(Math.max(0, threshold - subtotal()));
+    var allExclVat = productsExclVat;
+    if (shipping > 0) {
+      allExclVat = round2(allExclVat + lineAmounts(shipping, 1).totalExclVat);
+    }
+
+    return {
+      productsInclVat: productsInclVat,
+      shipping: shipping,
+      amountToFreeShipping: shipping === 0 || !hasThreshold
+        ? 0
+        : round2(Math.max(0, threshold - productsInclVat)),
+      grandTotalInclVat: round2(allExclVat * (1 + VAT_RATE))
+    };
   }
 
   function add(id, qty) {
@@ -256,21 +267,21 @@
       })
       .join("");
 
-    var ship = shipping();
-    var toFree = amountToFreeShipping();
+    var t = totals();
 
     shippingRow.hidden = false;
-    shippingBox.textContent = ship > 0 ? fmt(ship) : "Gratis";
-    shippingBox.classList.toggle("is-free", ship === 0);
+    shippingBox.textContent = t.shipping > 0 ? fmt(t.shipping) : "Gratis";
+    shippingBox.classList.toggle("is-free", t.shipping === 0);
 
-    if (toFree > 0) {
-      nudgeBox.textContent = "Nog " + fmt(toFree) + " en je verzending is gratis!";
+    if (t.amountToFreeShipping > 0) {
+      nudgeBox.textContent =
+        "Nog " + fmt(t.amountToFreeShipping) + " en je verzending is gratis!";
       nudgeBox.hidden = false;
     } else {
       nudgeBox.hidden = true;
     }
 
-    totalBox.textContent = fmt(subtotal() + ship);
+    totalBox.textContent = fmt(t.grandTotalInclVat);
     checkoutBtn.classList.remove("is-disabled");
   }
 
@@ -333,13 +344,11 @@
   window.ANIMOOH_CART = {
     read: read,
     lines: lines,
-    subtotal: subtotal,
+    totals: totals,
     itemCount: itemCount,
     clear: clear,
     open: open,
     fmt: fmt,
-    shipping: shipping,
-    amountToFreeShipping: amountToFreeShipping,
     ready: function (cb) {
       if (catalog) cb();
       else document.addEventListener("animooh-cart-ready", cb, { once: true });

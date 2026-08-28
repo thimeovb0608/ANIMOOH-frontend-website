@@ -264,23 +264,23 @@
         '</div>'
       ).join("");
 
-      const ship = cart.shipping();
-      const toFree = cart.amountToFreeShipping();
+      const t = cart.totals();
       const shipBox = document.getElementById("summary-shipping");
       const nudge = document.getElementById("summary-nudge");
 
       document.getElementById("summary-ship-row").hidden = false;
-      shipBox.textContent = ship > 0 ? cart.fmt(ship) : "Gratis";
-      shipBox.classList.toggle("is-free", ship === 0);
+      shipBox.textContent = t.shipping > 0 ? cart.fmt(t.shipping) : "Gratis";
+      shipBox.classList.toggle("is-free", t.shipping === 0);
 
-      if (toFree > 0) {
-        nudge.textContent = "Nog " + cart.fmt(toFree) + " en je verzending is gratis!";
+      if (t.amountToFreeShipping > 0) {
+        nudge.textContent =
+          "Nog " + cart.fmt(t.amountToFreeShipping) + " en je verzending is gratis!";
         nudge.hidden = false;
       } else {
         nudge.hidden = true;
       }
 
-      document.getElementById("summary-total").textContent = cart.fmt(cart.subtotal() + ship);
+      document.getElementById("summary-total").textContent = cart.fmt(t.grandTotalInclVat);
       payBtn.disabled = false;
     }
 
