@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       title: "Artikel niet gevonden — ANIMOOH!",
       description: "Dit artikel bestaat niet (meer).",
       bodyHtml: `
-        <section style="padding-top:140px;text-align:center;">
+        <section style="padding-top:calc(var(--header-h) + 76px);text-align:center;">
           <h1 class="section-title">Artikel niet gevonden</h1>
           <p class="section-sub" style="margin:0 auto;">Dit artikel bestaat niet of is verwijderd.</p>
           <a href="/blog" class="btn-primary">Naar de blog →</a>
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
   const contentHtml = marked.parse(post.body);
 
   const body = `
-    <section style="padding-top:140px;max-width:760px;margin:0 auto;">
+    <section style="padding-top:calc(var(--header-h) + 76px);max-width:760px;margin:0 auto;">
       <a href="/blog" class="section-label" style="text-decoration:none;">← Terug naar blog</a>
       <div class="blog-post-meta">${formatDate(post.meta.date)}</div>
       <h1 class="section-title">${escapeHtml(post.meta.title || post.slug)}</h1>

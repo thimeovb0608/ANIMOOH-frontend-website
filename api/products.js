@@ -1,7 +1,7 @@
 // GET /api/products — public catalog the site can read: names, prices, stock.
 // Never exposes secrets; only what a customer may see.
 
-const { PRODUCTS, SHIPPING_EUR } = require("../lib/catalog");
+const { PRODUCTS, SHIPPING_EUR, FREE_SHIPPING_FROM_EUR } = require("../lib/catalog");
 const { getStock } = require("../lib/adsolut");
 
 module.exports = async (req, res) => {
@@ -24,5 +24,9 @@ module.exports = async (req, res) => {
     };
   }
 
-  res.status(200).json({ products, shippingEUR: SHIPPING_EUR });
+  res.status(200).json({
+    products,
+    shippingEUR: SHIPPING_EUR,
+    freeShippingFromEUR: FREE_SHIPPING_FROM_EUR
+  });
 };

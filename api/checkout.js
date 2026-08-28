@@ -10,7 +10,7 @@
 //   MOLLIE_API_KEY  — test_xxx while testing, live_xxx in production
 //   SITE_URL        — e.g. https://animooh.vercel.app (no trailing slash)
 
-const { PRODUCTS, SHIPPING_EUR } = require("../lib/catalog");
+const { PRODUCTS, SHIPPING_EUR, FREE_SHIPPING_FROM_EUR } = require("../lib/catalog");
 const { orderTotals } = require("../lib/pricing");
 
 const MOLLIE_API = "https://api.mollie.com/v2";
@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
     }
   }
 
-  const totals = orderTotals(lines, SHIPPING_EUR);
+  const totals = orderTotals(lines, SHIPPING_EUR, FREE_SHIPPING_FROM_EUR);
 
   const description =
     lines.length === 1
@@ -82,6 +82,7 @@ module.exports = async (req, res) => {
       locale: "nl_BE",
       metadata: {
         items: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
+        shippingEUR: totals.shipping.toFixed(2), // what we actually charged, for the webhook
         customer: { name, email, street, zip, city, country: country || "BE" }
       }
     })

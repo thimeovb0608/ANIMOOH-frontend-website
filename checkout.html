@@ -9,7 +9,7 @@
     .checkout-wrap {
       max-width: 920px;
       margin: 0 auto;
-      padding: 120px 24px 80px;
+      padding: calc(var(--header-h) + 56px) 24px 80px;
       display: grid;
       grid-template-columns: 1fr 1.2fr;
       gap: 48px;
@@ -20,7 +20,7 @@
       border-radius: 24px;
       padding: 28px;
       position: sticky;
-      top: 96px;
+      top: calc(var(--header-h) + 32px);
     }
     .order-summary > h2 {
       font-family: 'BrauerNeue', sans-serif;
@@ -52,17 +52,37 @@
       font-size: 14px;
       white-space: nowrap;
     }
+    .summary-ship {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #7a6a5f;
+    }
+    .summary-ship .is-free { color: #2e7d32; font-weight: 700; }
+    .summary-nudge {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.65);
+      color: #7a5c00;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
     .summary-total {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      margin-top: 18px;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0,0,0,0.1);
       font-family: 'BrauerNeue', sans-serif;
       font-weight: 900;
     }
     .summary-total span { font-size: 15px; }
     .summary-total strong { font-size: 28px; color: var(--orange); }
-    .shipping-note { font-size: 13px; color: #7a6a5f; margin-top: 2px; }
     .summary-edit {
       display: inline-block;
       margin-top: 14px;
@@ -137,12 +157,15 @@
       color: #777;
     }
     @media (max-width: 820px) {
-      .checkout-wrap { grid-template-columns: 1fr; padding-top: 96px; }
+      .checkout-wrap { grid-template-columns: 1fr; padding-top: calc(var(--header-h) + 32px); }
       .order-summary { position: static; }
     }
   </style>
 </head>
 <body>
+
+  <!-- PROMO BAR -->
+  <div class="promo-bar">🚚 Gratis verzending vanaf € 50</div>
 
   <!-- NAV -->
   <nav class="nav-brand">
@@ -165,8 +188,11 @@
     <div class="order-summary">
       <h2>Jouw bestelling</h2>
       <div id="summary-lines"></div>
+      <p class="summary-nudge" id="summary-nudge" hidden></p>
+      <div class="summary-ship" id="summary-ship-row">
+        <span>Verzending</span><span id="summary-shipping"></span>
+      </div>
       <div class="summary-total"><span>Totaal</span><strong id="summary-total">…</strong></div>
-      <div class="shipping-note" id="summary-shipping"></div>
       <button type="button" class="summary-edit" id="summary-edit">Winkelmandje aanpassen</button>
     </div>
 
@@ -224,7 +250,8 @@
         box.innerHTML = '<p style="padding:20px 0;color:#7a6a5f;">Je winkelmandje is leeg.<br />' +
           '<a href="products.html" style="color:var(--orange);font-weight:700;">Bekijk onze producten →</a></p>';
         document.getElementById("summary-total").textContent = cart.fmt(0);
-        document.getElementById("summary-shipping").textContent = "";
+        document.getElementById("summary-ship-row").hidden = true;
+        document.getElementById("summary-nudge").hidden = true;
         payBtn.disabled = true;
         return;
       }
@@ -238,9 +265,22 @@
       ).join("");
 
       const ship = cart.shipping();
+      const toFree = cart.amountToFreeShipping();
+      const shipBox = document.getElementById("summary-shipping");
+      const nudge = document.getElementById("summary-nudge");
+
+      document.getElementById("summary-ship-row").hidden = false;
+      shipBox.textContent = ship > 0 ? cart.fmt(ship) : "Gratis";
+      shipBox.classList.toggle("is-free", ship === 0);
+
+      if (toFree > 0) {
+        nudge.textContent = "Nog " + cart.fmt(toFree) + " en je verzending is gratis!";
+        nudge.hidden = false;
+      } else {
+        nudge.hidden = true;
+      }
+
       document.getElementById("summary-total").textContent = cart.fmt(cart.subtotal() + ship);
-      document.getElementById("summary-shipping").textContent =
-        ship > 0 ? "waarvan " + cart.fmt(ship) + " verzending" : "Gratis verzending";
       payBtn.disabled = false;
     }
 

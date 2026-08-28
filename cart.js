@@ -15,6 +15,7 @@
 
   var catalog = null;    // { id: { name, priceEUR, image, buyable } }
   var shippingEUR = "0.00";
+  var freeShippingFromEUR = null;
 
   // ── Price maths ───────────────────────────────────────────────────────────
   // Must stay identical to round2()/buildWebOrderPayload() in lib/adsolut.js:
@@ -98,6 +99,21 @@
     return round2(exclSum * (1 + VAT_RATE));
   }
 
+  // Mirrors shippingFor() in lib/pricing.js: free from the threshold up.
+  function shipping() {
+    var rate = round2(Number(shippingEUR || 0));
+    var threshold = Number(freeShippingFromEUR);
+    if (!threshold || isNaN(threshold)) return rate;
+    return subtotal() >= threshold ? 0 : rate;
+  }
+
+  // How much more to spend before shipping is free; 0 once it already is.
+  function amountToFreeShipping() {
+    var threshold = Number(freeShippingFromEUR);
+    if (!threshold || isNaN(threshold) || shipping() === 0) return 0;
+    return round2(Math.max(0, threshold - subtotal()));
+  }
+
   function add(id, qty) {
     var cart = read();
     var next = (cart[id] || 0) + (qty || 1);
@@ -122,7 +138,7 @@
   }
 
   // ── UI ────────────────────────────────────────────────────────────────────
-  var drawer, overlay, badge, linesBox, totalBox, shippingBox, checkoutBtn;
+  var drawer, overlay, badge, linesBox, totalBox, shippingBox, shippingRow, nudgeBox, checkoutBtn;
 
   function buildUI() {
     var nav = document.querySelector(".nav-brand");
@@ -159,8 +175,9 @@
       "</div>" +
       '<div class="cart-lines"></div>' +
       '<div class="cart-foot">' +
+      '<p class="cart-nudge" hidden></p>' +
+      '<div class="cart-shipping-row"><span>Verzending</span><span class="cart-shipping"></span></div>' +
       '<div class="cart-total"><span>Totaal</span><strong>€ 0,00</strong></div>' +
-      '<p class="cart-shipping"></p>' +
       '<a class="cart-checkout" href="/checkout.html">Afrekenen</a>' +
       "</div>";
 
@@ -171,6 +188,8 @@
     linesBox = drawer.querySelector(".cart-lines");
     totalBox = drawer.querySelector(".cart-total strong");
     shippingBox = drawer.querySelector(".cart-shipping");
+    shippingRow = drawer.querySelector(".cart-shipping-row");
+    nudgeBox = drawer.querySelector(".cart-nudge");
     checkoutBtn = drawer.querySelector(".cart-checkout");
 
     // One listener for every quantity/remove button, so re-rendering the list
@@ -211,7 +230,8 @@
       linesBox.innerHTML =
         '<p class="cart-empty">Je winkelmandje is nog leeg.<br /><a href="/products.html">Bekijk onze producten →</a></p>';
       totalBox.textContent = fmt(0);
-      shippingBox.textContent = "";
+      shippingRow.hidden = true;
+      nudgeBox.hidden = true;
       checkoutBtn.classList.add("is-disabled");
       return;
     }
@@ -236,9 +256,21 @@
       })
       .join("");
 
-    var ship = Number(shippingEUR);
+    var ship = shipping();
+    var toFree = amountToFreeShipping();
+
+    shippingRow.hidden = false;
+    shippingBox.textContent = ship > 0 ? fmt(ship) : "Gratis";
+    shippingBox.classList.toggle("is-free", ship === 0);
+
+    if (toFree > 0) {
+      nudgeBox.textContent = "Nog " + fmt(toFree) + " en je verzending is gratis!";
+      nudgeBox.hidden = false;
+    } else {
+      nudgeBox.hidden = true;
+    }
+
     totalBox.textContent = fmt(subtotal() + ship);
-    shippingBox.textContent = ship > 0 ? "waarvan " + fmt(ship) + " verzending" : "Gratis verzending";
     checkoutBtn.classList.remove("is-disabled");
   }
 
@@ -282,6 +314,7 @@
       .then(function (data) {
         catalog = data.products;
         shippingEUR = data.shippingEUR;
+        freeShippingFromEUR = data.freeShippingFromEUR;
         render();
         document.dispatchEvent(new Event("animooh-cart-ready"));
       })
@@ -305,7 +338,8 @@
     clear: clear,
     open: open,
     fmt: fmt,
-    shipping: function () { return Number(shippingEUR); },
+    shipping: shipping,
+    amountToFreeShipping: amountToFreeShipping,
     ready: function (cb) {
       if (catalog) cb();
       else document.addEventListener("animooh-cart-ready", cb, { once: true });
