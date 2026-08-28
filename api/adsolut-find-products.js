@@ -6,6 +6,12 @@
 //   productId (id), vatCodeId, unitId (defaultSalesUnitId)
 //
 // Optional: ?q=animooh,no pee   → override the default search terms.
+//           ?q=75600            → exact article number; also dumps the full
+//                                 record, which is how we pinned down the
+//                                 "verzendkosten" article for shipping lines.
+//
+// Note: CatalogueProducts with no CatalogueCodes filter returns ALL articles,
+// not just webshop ones — so non-webshop articles like 75600 show up too.
 
 const { getAccessToken, } = require("../lib/adsolut-auth");
 const { ADMINISTRATION_ID } = require("../lib/adsolut");
@@ -56,8 +62,10 @@ module.exports = async (req, res) => {
       scanned += rows.length;
 
       for (const product of rows) {
-        const haystack = `${product.code || ""} ${nameToText(product)}`.toLowerCase();
+        const code = String(product.code || "");
+        const haystack = `${code} ${nameToText(product)}`.toLowerCase();
         if (terms.some((t) => haystack.includes(t))) {
+          const exactCode = terms.includes(code.toLowerCase());
           matches.push({
             code: product.code,
             name: nameToText(product),
@@ -67,7 +75,11 @@ module.exports = async (req, res) => {
             blocked: product.blocked,
             isActive: product.isActive,
             stockManagement: product.stockManagement,
-            catalogueIds: product.catalogueIds
+            catalogueIds: product.catalogueIds,
+            // Searching by exact article number means we're pinning down one
+            // specific article (e.g. 75600 verzendkosten), so hand back every
+            // field rather than guessing which ones matter.
+            ...(exactCode ? { fullRecord: product } : {})
           });
         }
       }
