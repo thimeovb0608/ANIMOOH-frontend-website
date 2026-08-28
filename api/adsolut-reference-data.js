@@ -25,10 +25,11 @@ module.exports = async (req, res) => {
   try {
     const accessToken = await getAccessToken();
 
-    const [countries, catalogues, vatCodes] = await Promise.all([
+    const [countries, catalogues, vatCodes, erpConfig] = await Promise.all([
       fetchAll("Countries", accessToken),
       fetchAll("Catalogues", accessToken),
-      fetchAll("VatCodes", accessToken)
+      fetchAll("VatCodes", accessToken),
+      fetchAll("ErpConfigurations", accessToken)
     ]);
 
     // Pull out just BE and NL so they're easy to spot in the response.
@@ -41,6 +42,8 @@ module.exports = async (req, res) => {
     const ourVatCode = vatRows.find((v) => v.id === OUR_VAT_CODE_ID) || null;
 
     res.status(200).json({
+      erpConfiguration: erpConfig.body,
+      erpConfigStatus: erpConfig.status,
       ourProductVatCode: ourVatCode,
       belgium: pick("BE"),
       netherlands: pick("NL"),
