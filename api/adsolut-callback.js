@@ -25,7 +25,27 @@ module.exports = async (req, res) => {
     return;
   }
   if (!code) {
-    res.status(400).json({ error: "Geen 'code' in de URL. Start opnieuw via /api/adsolut-login." });
+    // OAuth reports refusals by redirecting back with error params rather than
+    // a code — e.g. invalid_scope when a requested scope isn't provisioned for
+    // this client. Surface those instead of swallowing the reason.
+    if (req.query.error) {
+      res.status(400).json({
+        error: req.query.error,
+        errorDescription: req.query.error_description || null,
+        meaning:
+          req.query.error === "invalid_scope"
+            ? "Wolters Kluwer heeft een gevraagde scope geweigerd — waarschijnlijk WK.BE.Erp.Read. Die moet WK eerst voor deze client vrijgeven."
+            : "Zie errorDescription.",
+        note: "De bestaande refresh token in KV is NIET aangepast."
+      });
+      return;
+    }
+
+    res.status(400).json({
+      error: "Geen 'code' in de URL. Start opnieuw via /api/adsolut-login.",
+      receivedQueryParams: Object.keys(req.query || {}),
+      note: "Open /api/adsolut-login (niet deze callback rechtstreeks)."
+    });
     return;
   }
 
