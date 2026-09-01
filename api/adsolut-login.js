@@ -6,7 +6,12 @@
 // (specifically: where stock/price actually live), this gets replaced by the
 // proper lib/adsolut.js + secure refresh-token storage discussed separately.
 
-const SCOPES = "WK.GraphAPI.User offline_access WK.BE.Administrations WK.BE.ERP.Base WK.BE.ERP.Webshop WK.BE.Documents";
+// WK.BE.Erp.Read is needed for the ErpRead policy, which guards ActualPrices
+// (the endpoint holding the real verkoopprijs). ERP.Base and ERP.Webshop do
+// NOT satisfy that policy — see Scopes.md — which is why price calls 403.
+// Everything else is unchanged, so a failed login simply leaves the existing
+// refresh token in KV untouched.
+const SCOPES = "WK.GraphAPI.User offline_access WK.BE.Administrations WK.BE.ERP.Base WK.BE.ERP.Webshop WK.BE.Documents WK.BE.Erp.Read";
 const AUTHORIZE_URL = "https://login.wolterskluwer.eu/auth/core/connect/authorize";
 
 module.exports = async (req, res) => {
